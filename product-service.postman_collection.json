@@ -1,0 +1,125 @@
+{
+	"info": {
+		"_postman_id": "b0b0b0b0-b0b0-b0b0-b0b0-b0b0b0b0b0b0",
+		"name": "Product Service API",
+		"description": "API collection for Product Service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3030",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "Get All Products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/products",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"products"
+							]
+						},
+						"description": "Retrieve a list of all active products"
+					}
+				},
+				{
+					"name": "Create Product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Sample Product\",\n    \"description\": \"This is a sample product description that meets the minimum length requirement\",\n    \"price\": 29.99,\n    \"category\": \"Electronics\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/products",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"products"
+							]
+						},
+						"description": "Create a new product"
+					}
+				},
+				{
+					"name": "Update Product",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Product Name\",\n    \"description\": \"This is an updated product description that meets the minimum length requirement\",\n    \"price\": 39.99,\n    \"category\": \"Electronics\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/products/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"products",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"description": "Product ID"
+								}
+							]
+						},
+						"description": "Update an existing product by ID"
+					}
+				},
+				{
+					"name": "Delete Product",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/products/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"products",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"description": "Product ID"
+								}
+							]
+						},
+						"description": "Soft delete a product by ID"
+					}
+				}
+			],
+			"description": "Product management endpoints"
+		}
+	]
+}
