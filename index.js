@@ -1,11 +1,11 @@
 // Import required packages
-import express from 'express';
-import bodyParser from 'body-parser';
-import swaggerUi from 'swagger-ui-express';
-import swaggerJsdoc from 'swagger-jsdoc';
-import Product from './models/Product.js';
-import config from './config/index.js';
-import connectDB from './config/database.js';
+import express from "express";
+import bodyParser from "body-parser";
+import swaggerUi from "swagger-ui-express";
+import swaggerJsdoc from "swagger-jsdoc";
+import Product from "./models/Product.js";
+import config from "./config/index.js";
+import connectDB from "./config/database.js";
 
 // Initialize express app
 const app = express();
@@ -17,18 +17,18 @@ app.use(express.json());
 // Swagger configuration
 const swaggerOptions = {
   definition: {
-    openapi: '3.0.0',
+    openapi: "3.0.0",
     info: {
-      title: 'Product API',
-      description: 'API documentation for product management',
-      version: '1.0.0',
+      title: "Product API",
+      description: "API documentation for product management",
+      version: "1.0.0",
     },
   },
-  apis: ['./index.js'],
+  apis: ["./index.js"],
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 /**
  * @swagger
@@ -61,12 +61,12 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
  *       200:
  *         description: List of all products
  */
-app.get('/products', async (req, res) => {
+app.get("/products", async (req, res) => {
   try {
     const products = await Product.find({ isDeleted: false });
     res.json(products);
   } catch (error) {
-    res.status(500).json({ error: 'Error fetching products' });
+    res.status(500).json({ error: "Error fetching products" });
   }
 });
 
@@ -82,16 +82,51 @@ app.get('/products', async (req, res) => {
  *           schema:
  *             $ref: '#/components/schemas/Product'
  */
-app.post('/products', async (req, res) => {
+app.post("/products", async (req, res) => {
   try {
     const product = new Product(req.body);
     await product.save();
     res.status(201).json(product);
   } catch (error) {
-    if (error.name === 'ValidationError') {
+    if (error.name === "ValidationError") {
       return res.status(400).json({ error: error.message });
     }
-    res.status(500).json({ error: 'Error creating product' });
+    res.status(500).json({ error: "Error creating product" });
+  }
+});
+
+/**
+ * @swagger
+ * /products/{id}:
+ *   get:
+ *     summary: Get a product by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Product ID
+ *     responses:
+ *       200:
+ *         description: Product details
+ *       404:
+ *         description: Product not found
+ */
+app.get("/products/:id", async (req, res) => {
+  try {
+    const product = await Product.findOne({ 
+      _id: req.params.id,
+      isDeleted: false 
+    });
+
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    res.json(product);
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching product" });
   }
 });
 
@@ -107,27 +142,23 @@ app.post('/products', async (req, res) => {
  *         schema:
  *           type: string
  */
-app.put('/products/:id', async (req, res) => {
+app.put("/products/:id", async (req, res) => {
   try {
-    const product = await Product.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { 
-        new: true,
-        runValidators: true // Enable validation for updates
-      }
-    );
+    const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true, // Enable validation for updates
+    });
 
     if (!product) {
-      return res.status(404).json({ error: 'Product not found' });
+      return res.status(404).json({ error: "Product not found" });
     }
 
     res.json(product);
   } catch (error) {
-    if (error.name === 'ValidationError') {
+    if (error.name === "ValidationError") {
       return res.status(400).json({ error: error.message });
     }
-    res.status(500).json({ error: 'Error updating product' });
+    res.status(500).json({ error: "Error updating product" });
   }
 });
 
@@ -143,7 +174,7 @@ app.put('/products/:id', async (req, res) => {
  *         schema:
  *           type: string
  */
-app.delete('/products/:id', async (req, res) => {
+app.delete("/products/:id", async (req, res) => {
   try {
     const product = await Product.findByIdAndUpdate(
       req.params.id,
@@ -152,12 +183,12 @@ app.delete('/products/:id', async (req, res) => {
     );
 
     if (!product) {
-      return res.status(404).json({ error: 'Product not found' });
+      return res.status(404).json({ error: "Product not found" });
     }
 
-    res.json({ message: 'Product deleted successfully' });
+    res.json({ message: "Product deleted successfully" });
   } catch (error) {
-    res.status(500).json({ error: 'Error deleting product' });
+    res.status(500).json({ error: "Error deleting product" });
   }
 });
 
@@ -170,11 +201,13 @@ const startServer = async () => {
     // Start server
     app.listen(config.port, () => {
       console.log(`Server is running on http://localhost:${config.port}`);
-      console.log(`API documentation available at http://localhost:${config.port}/api-docs`);
+      console.log(
+        `API documentation available at http://localhost:${config.port}/api-docs`
+      );
       console.log(`Environment: ${config.env}`);
     });
   } catch (error) {
-    console.error('Failed to start server:', error);
+    console.error("Failed to start server:", error);
     process.exit(1);
   }
 };
